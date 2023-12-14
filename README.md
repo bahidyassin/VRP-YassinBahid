@@ -3,34 +3,35 @@
 The code presented here presents an original algorithm that hopes to answer the problem presented in problem.txt.
 (This project was made in the context of a challenge for Vorto. Thanks to them for providing the problem and data set.)
 ## Important note:
-    The code runs fine. However, a line needed to be added to evaluateShare.py. (If using your evaluateShare.py, please add the following in line 80:)
+
+The code runs fine. However, a line needed to be added to evaluateShare.py. (If using your evaluateShare.py, please add the following in line 80:)
 
 
-'''python
+'''
     line = line.replace('\r', '')
   '''
 ## Running Code with Virtual Env:
 In Terminal Run:
 
-'''cmd
+''
 python -m venv VRPenv
 '''
 
 Then,
 
-'''cmd
+'''
 .\VRPenv\Scripts\activate
 '''
 
 Then run:
 
-'''cmd
+'''
     pip install -r requirements.txt
 '''
 
 And finally, run:
 
-'''cmd
+'''
 python evaluateShared.py --cmd "python VRP.py" --problemDir path of the training problem (expl: './Training Problems')
 '''
 
