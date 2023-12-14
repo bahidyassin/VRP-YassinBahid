@@ -33,8 +33,12 @@ Then run:
     pip install -r requirements.txt
 ```
 
-And finally, run:
+###### Running for one problem:
+```cmd
+python3 VRP.py 'path of the training problem (expl: './Training Problems/problem1.txt')'
+```
 
+###### Running benchmark:
 ```cmd
 python3 evaluateShared.py --cmd "python3 VRP.py" --problemDir path of the training problem (expl: './Training Problems')
 ```
