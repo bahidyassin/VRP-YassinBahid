@@ -17,10 +17,14 @@ In Terminal Run:
 python3 -m venv VRPenv
 ```
 
-Then,
+Then if on windows::,
 
 ```cmd
 .\VRPenv\Scripts\activate
+```
+If on mac:
+```cmd
+source VRPenv/bin/activate
 ```
 
 Then run:
