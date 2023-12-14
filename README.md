@@ -36,7 +36,7 @@ Then run:
 And finally, run:
 
 ```cmd
-python3 evaluateShared.py --cmd "python VRP.py" --problemDir path of the training problem (expl: './Training Problems')
+python3 evaluateShared.py --cmd "python3 VRP.py" --problemDir path of the training problem (expl: './Training Problems')
 ```
 
 ## Pseudo Code Algorithm:
