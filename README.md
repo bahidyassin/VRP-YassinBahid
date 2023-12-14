@@ -14,7 +14,7 @@ The code runs fine. However, a line needed to be added to evaluateShare.py. (If 
 In Terminal Run:
 
 ```cmd
-python -m venv VRPenv
+python3 -m venv VRPenv
 ```
 
 Then,
