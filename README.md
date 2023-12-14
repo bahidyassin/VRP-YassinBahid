@@ -7,33 +7,33 @@ The code presented here presents an original algorithm that hopes to answer the 
 The code runs fine. However, a line needed to be added to evaluateShare.py. (If using your evaluateShare.py, please add the following in line 80:)
 
 
-'''
+```python
     line = line.replace('\r', '')
-  '''
+  ```
 ## Running Code with Virtual Env:
 In Terminal Run:
 
-''
+```cmd
 python -m venv VRPenv
-'''
+```
 
 Then,
 
-'''
+```cmd
 .\VRPenv\Scripts\activate
-'''
+```
 
 Then run:
 
-'''
+```cmd
     pip install -r requirements.txt
-'''
+```
 
 And finally, run:
 
-'''
+```cmd
 python evaluateShared.py --cmd "python VRP.py" --problemDir path of the training problem (expl: './Training Problems')
-'''
+```
 
 ## Pseudo Code Algorithm:
     - Step 1: Find the closest node to the origine (including the distance between pickup and drop off)
