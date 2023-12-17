@@ -1,7 +1,7 @@
 import sys
 import argparse
 import numpy as np
-
+import random
 threshold = 12*60
 
 class Load():
@@ -47,11 +47,79 @@ def DistanceBetweenPickupDropoffMatrix(loads):
             distance[i,j] = np.sqrt((loads[i].pickup[0]-loads[j].dropoff[0])**2 + (loads[i].pickup[1]-loads[j].dropoff[1])**2)
     return distance
 
+####################################################################################################################################
+### Crossover Mechenism:
+###
+#### Takes in a set of Routes and flips from the a random point to see if the road obtain is better.
+##################################################################################################################################
+def CalculateDistance(Pt1, Pt2):
+    return np.sqrt((Pt1[0] - Pt2[0])**2 + (Pt1[1] - Pt2[1])**2)
 
-def PathFinder(loads):
+def CalculateRouteDistance(Route, Loads):
+
+    RouteDistance = CalculateDistance((0,0), Loads[Route[0]].pickup)
+    for i in range(0, len(Route)-1):
+        RouteDistance += CalculateDistance(Loads[Route[i]].pickup, Loads[Route[i]].dropoff)
+        RouteDistance += CalculateDistance(Loads[Route[i]].dropoff, Loads[Route[i+1]].pickup)
+    RouteDistance += CalculateDistance(Loads[Route[-1]].pickup, Loads[Route[-1]].dropoff)
+    RouteDistance += CalculateDistance(Loads[Route[-1]].dropoff, (0,0))
+    return RouteDistance
+
+def CalculateRouteSDistance(Routes, Loads, VehiclePenalty):
+    TotalDistance = 0
+    for Route in Routes:
+        # print('Route in CRSD', Route)
+        TotalDistance += CalculateRouteDistance(Route, Loads)
+    return TotalDistance + VehiclePenalty*len(Routes)
+
+def GetMaxIndicies(List):
+    IDXLIST = []
+    MAX = max(List)
+    for i in range(0,len(List)):
+        if List[i] == MAX:
+              IDXLIST += [i]
+    return IDXLIST
+
+
+
+
+def BetterCrossover(Routes, Loads, VehicleCapacity, VehiclePenalty, MaxIter = 10000):
+    BestRoutes = Routes.copy()
+    for _ in range(MaxIter):
+        NewRoutes = BestRoutes.copy()
+        i, j = random.sample(range(0, len(NewRoutes)), 2)
+        route1 = NewRoutes[i].copy()
+        route2 = NewRoutes[j].copy()
+        k = random.randint(0, len(route1))
+        l = random.randint(0, len(route2))
+        
+        newroute1 = route1[:k] + route2[l:]
+        newroute2 = route2[:l] + route1[k:]
+        if newroute1 != [] and newroute2 != []:
+            if CalculateRouteDistance(newroute1, Loads) < VehicleCapacity and CalculateRouteDistance(newroute2, Loads) < VehicleCapacity:
+                NewRoutes[i] = newroute1
+                NewRoutes[j] = newroute2
+                if CalculateRouteSDistance(NewRoutes, Loads,VehiclePenalty) < CalculateRouteSDistance(BestRoutes, Loads,VehiclePenalty):
+                    BestRoutes = NewRoutes.copy()
+        elif newroute1 == [] and newroute2 != []:
+            if CalculateRouteDistance(newroute2, Loads) < VehicleCapacity:
+                NewRoutes[j] = newroute2
+                del NewRoutes[i]
+                if CalculateRouteSDistance(NewRoutes, Loads,VehiclePenalty) < CalculateRouteSDistance(BestRoutes, Loads,VehiclePenalty):
+                    BestRoutes = NewRoutes.copy()
+        elif newroute1 != [] and newroute2 == []:
+            if CalculateRouteDistance(newroute1, Loads) < VehicleCapacity:
+                NewRoutes[i] = newroute1
+                del NewRoutes[j]
+                if CalculateRouteSDistance(NewRoutes, Loads,VehiclePenalty) < CalculateRouteSDistance(BestRoutes, Loads,VehiclePenalty):
+                    BestRoutes = NewRoutes.copy()
+    return BestRoutes
+
+def PathFinder(loads, vehicle_capacity, VehiclePenalty, CrossIter):
     '''
     This is the Path finding Algorithm.
     loads: list of the loads needed to be reached
+    vehicle_capacity
     returns: a list of routes for each drivers.
     '''
 
@@ -137,7 +205,21 @@ def PathFinder(loads):
             DriversLatestLocation += [LoadClosestToOrigin]
             MilesDrivenPerDrivers = np.append(MilesDrivenPerDrivers, PickupDistanceToOrigine[LoadClosestToOrigin]+DistMtx[LoadClosestToOrigin,LoadClosestToOrigin])
 
-    return routes
+    
+    rt = routes.copy()
+    for r in rt:
+        for ri in range(0,len(r)):
+            r[ri] = r[ri] - 1
+    
+
+    ### We now apply the Crossover Mechanism:
+    bestroutes = BetterCrossover(routes, loads, VehicleCapacity, VehiclePenalty, MaxIter = CrossIter)
+
+    bt = bestroutes.copy()
+    for r in bt:
+        for ri in range(0,len(r)):
+            r[ri] = r[ri] + 1
+    return bt
 
 
 ## Loading path to run
@@ -146,8 +228,12 @@ path = str(sys.argv[1])
 
 ## Loading data
 loads = loadProblemFromFile(path)
+VehicleCapacity = 12*60
+VehiclePenalty = 500
+### Crossover Mechanism Number of Itterations::
+CrossIter = 100000
 ## Runing PathFinder
-rt = PathFinder(loads)
+rt = PathFinder(loads, VehicleCapacity, VehiclePenalty, CrossIter)
 
 ## Return best path
 ### Warning: the return seems to have a '\r' that I cannot get rid off. It is dealt with in the evaluateShared.py
