@@ -57,7 +57,7 @@ python3 evaluateShared.py --cmd "python3 VRP.py" --problemDir 'path of the train
             - Step 4.3.3: Remove the latest node from the load's left list.
             - Step 4.3.4: Break the for loop
         - Step 4.4: If no strategy is chosen, Add a new driver going to the closest node to the original (including distance to dropoff)
-
+        Step 5: Apply stochastic Crossover Mechanism where parts of routes are swaped in order to arrive to a better solution.
 
 ## File Directory:
 
